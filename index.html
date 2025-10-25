@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Climate Education Games - Canvas Portal</title>
+  <style>
+    html,body{height:100%;margin:0;background:#0b1220;color:#eaf2ff;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    h1{text-align:center;margin:20px 0 10px;font-weight:900;letter-spacing:.2px}
+    p.description{max-width:800px;margin:0 auto 20px;text-align:left;color:#b5c4e6;line-height:1.6;font-size:15px;padding:0 16px}
+    canvas{display:block;width:100%;height:70vh;max-height:780px;margin:10px auto;outline:1px solid #1a3056;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  </style>
+</head>
+<body>
+  <h1>Climate Education Games</h1>
+  <p class="description">Climate education isn't just for students; it's for everyone. These interactive games are designed for adults but are friendly for all ages. By turning complex climate concepts into playful, hands-on experiences, gamification helps us understand systems thinking, develop empathy for global challenges, and make climate action engaging and accessible.</p>
+  <canvas id="portal"></canvas>
+  <script>
+  const canvas = document.getElementById('portal');
+  const ctx = canvas.getContext('2d');
+  let DPR = window.devicePixelRatio || 1;
+  const games = [
+    {name:'Energy Grid Simulator', emoji:'⚡', url:'https://energy.jeanhuangfineart.com'},
+    {name:'Carbon Budget Countdown', emoji:'🌫️', url:'https://carbon.jeanhuangfineart.com'},
+    {name:'Farm to Future', emoji:'🥕', url:'https://farm.jeanhuangfineart.com'},
+    {name:'Circular Economy Challenge', emoji:'♻️', url:'https://circular.jeanhuangfineart.com'},
+    {name:'City Climate Adaptation Planner', emoji:'🏙️', url:'https://city.jeanhuangfineart.com'},
+    {name:'Carbon Removal Race', emoji:'🧪', url:'https://carbonremoval.jeanhuangfineart.com'},
+  ];
+  function resize(){
+    const cssW = window.innerWidth, cssH = window.innerHeight*0.7;
+    canvas.width = cssW*DPR; canvas.height = cssH*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  function draw(){
+    const W=canvas.width/DPR,H=canvas.height/DPR;ctx.clearRect(0,0,W,H);
+    const cols=3,rows=2;const gap=20;
+    const tileW=(W-gap*(cols+1))/cols;const tileH=(H-gap*(rows+1))/rows;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    let i=0;for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+      const x=gap+c*(tileW+gap);const y=gap+r*(tileH+gap);
+      ctx.fillStyle='#0f1a33';ctx.fillRect(x,y,tileW,tileH);
+      ctx.strokeStyle='#2a3f6e';ctx.strokeRect(x,y,tileW,tileH);
+      ctx.font='36px sans-serif';ctx.fillStyle='#7ef0c2';ctx.fillText(games[i].emoji,x+tileW/2,y+tileH/2-25);
+      ctx.font='16px sans-serif';ctx.fillStyle='#eaf2ff';
+      const lines = wrapText(ctx, games[i].name, x+tileW/2, y+tileH/2+20, tileW-20, 18);
+      i++;
+    }
+  }
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = text.split(' ');
+    let line = '', lines = [], ly = y;
+    for (let n=0; n<words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const testWidth = ctx.measureText(testLine).width;
+      if (testWidth > maxWidth && n > 0) {
+        ctx.fillText(line, x, ly);
+        line = words[n] + ' ';
+        ly += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, ly);
+    return lines;
+  }
+  resize();draw();window.addEventListener('resize',()=>{resize();draw();});
+  canvas.addEventListener('click',e=>{
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+    const W=canvas.width/DPR,H=canvas.height/DPR;
+    const cols=3,rows=2;const gap=20;
+    const tileW=(W-gap*(cols+1))/cols;const tileH=(H-gap*(rows+1))/rows;
+    let i=0;for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+      const x=gap+c*(tileW+gap);const y=gap+r*(tileH+gap);
+      if(mx>=x&&mx<=x+tileW&&my>=y&&my<=y+tileH){window.open(games[i].url,'_blank');}
+      i++;
+    }
+  });
+  </script>
+</body>
+</html>
